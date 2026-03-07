@@ -1,5 +1,6 @@
 const uart = @import("uart.zig");
 const gpio = @import("gpio.zig");
+const i2c = @import("i2c.zig");
 const uno = @import("uno.zig");
 
 // This is put in the data section
@@ -19,7 +20,9 @@ pub const interrupts = struct {
 
 pub fn main() void {
     uart.init(115200);
-    uart.write("All your codebase are belong to us!\r\n\r\n");
+
+    i2c.init();
+    scanI2cBus();
 
     if (bss_stuff[0] == 0)
         uart.write("Ahh its actually zero!\r\n");
@@ -31,7 +34,7 @@ pub fn main() void {
     uart.write(&bss_stuff);
 
     gpio.init(.D13, .out);
-    gpio.init(.D5, .out);
+    gpio.init(.A0, .out);
 
     while (true) {
         uart.write_ch(ch);
@@ -43,7 +46,31 @@ pub fn main() void {
         }
 
         gpio.toggle(.D13);
-        gpio.toggle(.D5);
+        gpio.toggle(.A0);
         uno.sleep(500);
     }
+}
+
+fn scanI2cBus() void {
+    uart.write("I2C scan:\r\n");
+    const count = i2c.scan(reportI2cDevice);
+    if (count == 0) {
+        uart.write("  no devices found\r\n");
+    }
+}
+
+fn reportI2cDevice(address: u7) void {
+    uart.write("  found device at 0x");
+    writeHexByte(@as(u8, address));
+    uart.write("\r\n");
+}
+
+fn writeHexByte(value: u8) void {
+    writeHexNibble(value >> 4);
+    writeHexNibble(value & 0x0f);
+}
+
+fn writeHexNibble(value: u8) void {
+    const digit = if (value < 10) '0' + value else 'A' + (value - 10);
+    uart.write_ch(digit);
 }
