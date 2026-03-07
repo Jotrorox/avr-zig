@@ -17,6 +17,7 @@ pub const hal = struct {
 
 pub const drivers = struct {
     pub const display = struct {
+        pub const hd44780_i2c = @import("drivers/display/hd44780_i2c.zig");
         pub const ssd1306 = @import("drivers/display/ssd1306.zig");
     };
 
@@ -38,5 +39,6 @@ pub const time = hal.time;
 pub const uart = hal.uart;
 pub const uno = board.uno;
 pub const dht11 = drivers.sensor.dht11;
+pub const hd44780_i2c = drivers.display.hd44780_i2c;
 pub const hc_sr04 = drivers.sensor.hc_sr04;
 pub const ssd1306 = drivers.display.ssd1306;

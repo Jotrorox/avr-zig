@@ -11,6 +11,7 @@ Available examples:
 - `dht11`
 - `hc-sr04`
 - `i2c-scan`
+- `lcd-1602-i2c`
 - `pwm-fade`
 - `pwm-rgb`
 - `ssd1306-demo`
