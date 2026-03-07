@@ -5,6 +5,7 @@ Each example is a standalone Zig project that depends on the root `avr_zig` pack
 Available examples:
 
 - `blink`
+- `custom-hooks`
 - `uart`
 - `i2c-scan`
 - `ssd1306-demo`

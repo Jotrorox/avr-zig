@@ -13,14 +13,23 @@ pub fn build(b: *std.Build) void {
 
     const avr_dep = b.dependency("avr_zig", .{});
     const avr_mod = avr_dep.module("avr_zig");
+    const app_mod = b.createModule(.{
+        .root_source_file = b.path("src/main.zig"),
+        .target = b.resolveTargetQuery(uno_query),
+        .optimize = optimize,
+        .imports = &.{.{ .name = "avr_zig", .module = avr_mod }},
+    });
 
     const exe = b.addExecutable(.{
         .name = "blink",
         .root_module = b.createModule(.{
-            .root_source_file = b.path("src/main.zig"),
+            .root_source_file = avr_dep.path("src/runtime/app_root.zig"),
             .target = b.resolveTargetQuery(uno_query),
             .optimize = optimize,
-            .imports = &.{.{ .name = "avr_zig", .module = avr_mod }},
+            .imports = &.{
+                .{ .name = "avr_zig", .module = avr_mod },
+                .{ .name = "app", .module = app_mod },
+            },
         }),
     });
     exe.bundle_compiler_rt = false;

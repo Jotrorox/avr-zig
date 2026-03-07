@@ -14,36 +14,21 @@ The root `build.zig` builds the library archive only. Upload, serial monitor, an
 
 ## Package usage
 
-Add this repository as a dependency, import `avr_zig`, and build your executable around `avr.runtime.Entry(App)` where `App` provides `main()` and optional interrupt handlers.
+Add this repository as a dependency, make `avr_zig`'s runtime bootstrap the executable root module in your `build.zig`, and keep your application module focused on `main()` plus optional interrupt handlers.
+
 
 ```zig
-const std = @import("std");
 const avr = @import("avr_zig");
 const time = avr.hal.time;
-const Runtime = avr.runtime.Entry(App);
 
-pub const App = struct {
-    pub const interrupts = struct {
-        pub fn TIMER0_COMPA() void {
-            time.handleTimer0CompareA();
-        }
-    };
-
-    pub fn main() void {
-        // Application code here.
+pub const interrupts = struct {
+    pub fn TIMER0_COMPA() void {
+        time.handleTimer0CompareA();
     }
 };
 
-export fn _unhandled_vector() void {
-    Runtime.unhandledVector();
-}
-
-pub export fn _start() noreturn {
-    Runtime.start();
-}
-
-pub fn panic(msg: []const u8, error_return_trace: ?*std.builtin.StackTrace, return_address: ?usize) noreturn {
-    Runtime.panic(msg, error_return_trace, return_address);
+pub fn main() void {
+    // Application code here.
 }
 ```
 

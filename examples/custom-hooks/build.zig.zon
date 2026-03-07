@@ -1,0 +1,14 @@
+.{
+    .name = .custom_hooks_example,
+    .version = "0.1.0",
+    .fingerprint = 0xd7df35d15c31d677,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

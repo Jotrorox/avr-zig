@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const exe = b.addExecutable(.{
-        .name = "i2c-scan",
+        .name = "custom-hooks",
         .root_module = b.createModule(.{
             .root_source_file = avr_dep.path("src/runtime/app_root.zig"),
             .target = b.resolveTargetQuery(uno_query),
@@ -45,7 +45,7 @@ pub fn build(b: *std.Build) void {
 }
 
 fn addUploadStep(b: *std.Build, tty: []const u8, bin_path: []const u8) void {
-    const upload = b.step("upload", "Flash the I2C scan example with avrdude");
+    const upload = b.step("upload", "Flash the custom hooks example with avrdude");
     const avrdude = b.addSystemCommand(&.{
         "avrdude",
         "-carduino",
@@ -60,7 +60,7 @@ fn addUploadStep(b: *std.Build, tty: []const u8, bin_path: []const u8) void {
 }
 
 fn addObjdumpStep(b: *std.Build, bin_path: []const u8) void {
-    const objdump = b.step("objdump", "Disassemble the I2C scan firmware");
+    const objdump = b.step("objdump", "Disassemble the custom hooks firmware");
     const avr_objdump = b.addSystemCommand(&.{
         "avr-objdump",
         "-dh",
