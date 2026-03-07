@@ -1,0 +1,14 @@
+.{
+    .name = .ds1302_example,
+    .version = "0.1.0",
+    .fingerprint = 0x6a42f12e18be5d69,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

@@ -8,6 +8,7 @@ Available examples:
 - `blink`
 - `button`
 - `custom-hooks`
+- `ds1302`
 - `dht11`
 - `hc-sr04`
 - `i2c-scan`

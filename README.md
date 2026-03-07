@@ -7,7 +7,7 @@ The package is organized by layer:
 - `src/mcu` contains MCU register definitions.
 - `src/board` contains board-specific configuration such as the Uno clock.
 - `src/hal` contains low-level peripheral access such as GPIO, ADC, I2C, PWM, time, and UART.
-- `src/drivers` contains higher-level device drivers such as the SSD1306 display driver, a lightweight DHT11 sensor driver, and a Timer1-based servo driver for standard RC servos on D9 or D10.
+- `src/drivers` contains higher-level device drivers such as the SSD1306 display driver, a lightweight DHT11 sensor driver and more.
 - `src/runtime` contains startup support used by applications and examples.
 
 The root `build.zig` builds the library archive only. Upload, serial monitor, and objdump steps live in each example's `build.zig` so the examples double as standalone reference projects.
@@ -29,4 +29,4 @@ Timer-backed helpers such as `avr.hal.time.sleep()` automatically provide their 
 
 See the example projects in `examples/` for complete build scripts, linker setup, and flashing commands.
 
-Input handling is split between `avr.hal.gpio` for digital pins and `avr.hal.adc` for blocking 10-bit reads on A0-A5. The repository examples include digital button input, analog input sampling, DHT11 sensor polling, a servo sweep on D9, and more.
+Input handling is split between `avr.hal.gpio` for digital pins and `avr.hal.adc` for blocking 10-bit reads on A0-A5. The repository examples include digital button input, analog input sampling, DHT11 sensor polling, and more.
