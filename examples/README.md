@@ -6,6 +6,8 @@ Available examples:
 
 - `blink`
 - `custom-hooks`
-- `uart`
 - `i2c-scan`
+- `pwm-fade`
+- `pwm-rgb`
 - `ssd1306-demo`
+- `uart`

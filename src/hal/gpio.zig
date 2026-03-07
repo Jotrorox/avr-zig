@@ -4,7 +4,12 @@ pub const Direction = enum { in, out };
 
 // PORTB: pins D8 to D13
 fn init_portb(pin: u3, comptime dir: Direction) void {
-    regs.PORTB.DDRB.* = @as(u8, @intFromEnum(dir)) << pin;
+    const mask = @as(u8, 1) << pin;
+    if (dir == .out) {
+        regs.PORTB.DDRB.* |= mask;
+    } else {
+        regs.PORTB.DDRB.* &= ~mask;
+    }
 }
 
 fn toggle_portb(comptime pin: u3) void {
@@ -15,7 +20,12 @@ fn toggle_portb(comptime pin: u3) void {
 
 // PORTD: pins D0 TO D7
 fn init_portd(pin: u3, comptime dir: Direction) void {
-    regs.PORTD.DDRD.* = @as(u8, @intFromEnum(dir)) << pin;
+    const mask = @as(u8, 1) << pin;
+    if (dir == .out) {
+        regs.PORTD.DDRD.* |= mask;
+    } else {
+        regs.PORTD.DDRD.* &= ~mask;
+    }
 }
 
 fn toggle_portd(comptime pin: u3) void {
@@ -26,7 +36,12 @@ fn toggle_portd(comptime pin: u3) void {
 
 // PORTC: pins A0 TO D5
 fn init_portc(pin: u3, comptime dir: Direction) void {
-    regs.PORTC.DDRC.* = @as(u8, @intFromEnum(dir)) << pin;
+    const mask = @as(u8, 1) << pin;
+    if (dir == .out) {
+        regs.PORTC.DDRC.* |= mask;
+    } else {
+        regs.PORTC.DDRC.* &= ~mask;
+    }
 }
 
 fn toggle_portc(comptime pin: u3) void {

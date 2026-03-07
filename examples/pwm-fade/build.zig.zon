@@ -1,0 +1,14 @@
+.{
+    .name = .pwm_fade_example,
+    .version = "0.1.0",
+    .fingerprint = 0x5c1675b6324e03d6,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

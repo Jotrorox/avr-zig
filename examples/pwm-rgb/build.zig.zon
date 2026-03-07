@@ -1,0 +1,14 @@
+.{
+    .name = .pwm_rgb_example,
+    .version = "0.1.0",
+    .fingerprint = 0xc17b470149f61640,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
