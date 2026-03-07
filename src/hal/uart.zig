@@ -1,5 +1,5 @@
-const uno = @import("uno.zig");
-const regs = @import("atmega328p.zig").registers;
+const uno = @import("../board/uno.zig");
+const regs = @import("../mcu/atmega328p.zig").registers;
 
 const ubrr0_value = blk: {
     const oversample = 8;

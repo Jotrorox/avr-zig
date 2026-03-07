@@ -1,0 +1,14 @@
+.{
+    .name = .uart_example,
+    .version = "0.1.0",
+    .fingerprint = 0x76131b84be13be94,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

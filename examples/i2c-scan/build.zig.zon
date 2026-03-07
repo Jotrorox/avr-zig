@@ -1,0 +1,14 @@
+.{
+    .name = .i2c_scan_example,
+    .version = "0.1.0",
+    .fingerprint = 0xfd06a33443fe4ada,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

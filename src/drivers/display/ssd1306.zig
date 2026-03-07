@@ -1,4 +1,4 @@
-const i2c = @import("i2c.zig");
+const i2c = @import("../../hal/i2c.zig");
 
 pub const default_address: u7 = 0x3C;
 

@@ -1,12 +1,11 @@
-const regs = @import("atmega328p.zig").registers;
+const uno = @import("../board/uno.zig");
+const regs = @import("../mcu/atmega328p.zig").registers;
 
-pub const CPU_FREQ = 16000000;
-
-const TIMER0_PRESCALER = 64;
-const TIMER0_COMPARE = (CPU_FREQ / TIMER0_PRESCALER / 1000) - 1;
+const timer0_prescaler = 64;
+const timer0_compare = (uno.CPU_FREQ / timer0_prescaler / 1000) - 1;
 
 comptime {
-    if (TIMER0_COMPARE > 255) {
+    if (timer0_compare > 255) {
         @compileError("Timer0 compare value does not fit in 8 bits");
     }
 }
@@ -58,7 +57,7 @@ fn ensureTimer0Tick() void {
         regs.TC0.TCCR0B.modify(.{ .CS0 = 0, .WGM02 = 0 });
         regs.TC0.TCCR0A.modify(.{ .WGM0 = 0b10, .COM0A = 0, .COM0B = 0 });
         regs.TC0.TCNT0.* = 0;
-        regs.TC0.OCR0A.* = TIMER0_COMPARE;
+        regs.TC0.OCR0A.* = timer0_compare;
         regs.TC0.TIFR0.modify(.{ .OCF0A = 1 });
         regs.TC0.TIMSK0.modify(.{ .OCIE0A = 1 });
         regs.TC0.TCCR0B.modify(.{ .CS0 = 0b011, .WGM02 = 0 });
