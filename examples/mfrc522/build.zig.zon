@@ -1,0 +1,14 @@
+.{
+    .name = .mfrc522_example,
+    .version = "0.1.0",
+    .fingerprint = 0xd2e27f245dfbe8b3,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

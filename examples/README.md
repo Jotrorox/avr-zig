@@ -13,6 +13,7 @@ Available examples:
 - `hc-sr04`
 - `i2c-scan`
 - `lcd-1602-i2c`
+- `mfrc522`
 - `pwm-fade`
 - `pwm-rgb`
 - `servo`
