@@ -37,13 +37,19 @@ fn initDisplay() void {
     }
 
     display.clear(.off);
-    display.drawPixel(64, 32, .on);
-    display.drawLine(0, 0, 127, 63, .on);
-    display.drawLine(0, 63, 127, 0, .on);
-    display.drawLine(0, 0, 127, 0, .on);
-    display.drawLine(0, 63, 127, 63, .on);
-    display.drawLine(0, 0, 0, 63, .on);
-    display.drawLine(127, 0, 127, 63, .on);
+    display.drawRect(0, 0, 128, 64, .on);
+    display.fillRect(4, 4, 120, 12, .on);
+    display.drawText(12, 6, "AVR ZIG", .off, ssd1306.default_font);
+
+    display.drawRect(6, 22, 116, 16, .on);
+    display.drawText(12, 27, "SSD1306 DEMO", .on, ssd1306.default_font);
+
+    display.drawLine(8, 48, 56, 48, .on);
+    display.drawLine(8, 52, 56, 52, .on);
+    display.drawLine(8, 56, 56, 56, .on);
+
+    display.fillRect(78, 44, 40, 14, .on);
+    display.drawText(88, 48, "OK", .off, ssd1306.default_font);
 
     if (display.present()) {
         uart.write("SSD1306 demo drawn\r\n");
