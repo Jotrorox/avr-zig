@@ -417,6 +417,19 @@ pub fn pwmChannel(comptime pin: Pin) ?PwmChannel {
     };
 }
 
+pub fn usesReservedTimer0Pwm(comptime pin: Pin) bool {
+    return switch (current_board) {
+        .uno => switch (pin) {
+            .D5, .D6 => true,
+            else => false,
+        },
+        .mega2560 => switch (pin) {
+            .D4, .D13 => true,
+            else => false,
+        },
+    };
+}
+
 pub fn servoChannel(comptime pin: Pin) ?ServoChannel {
     return switch (current_board) {
         .uno => switch (pin) {

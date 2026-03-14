@@ -1,13 +1,13 @@
 const gpio = @import("../../hal/gpio.zig");
 const servo = @import("../actuator/servo.zig");
-const regs = @import("../../mcu/atmega328p.zig").registers;
-const uno = @import("../../board/uno.zig");
+const platform = @import("../../platform/current.zig");
+const regs = platform.registers;
 
 const trigger_pulse_us: u16 = 10;
 const pre_trigger_settle_us: u16 = 4;
 const echo_start_timeout_ticks: u16 = 60_000;
 const echo_end_timeout_ticks: u16 = 60_000;
-const cycles_per_us = uno.CPU_FREQ / 1_000_000;
+const cycles_per_us = platform.CPU_FREQ / 1_000_000;
 const timer1_clock_select = 0b010;
 
 pub const Error = error{

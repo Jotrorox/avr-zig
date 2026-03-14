@@ -1,6 +1,6 @@
-const uno = @import("../board/uno.zig");
 const gpio = @import("gpio.zig");
-const regs = @import("../mcu/atmega328p.zig").registers;
+const platform = @import("../platform/current.zig");
+const regs = platform.registers;
 
 pub const max_duty = 255;
 
@@ -8,24 +8,14 @@ const timer_prescaler = 64;
 const timer1_clock_select = 0b011;
 const timer2_clock_select = 0b100;
 const non_inverting_compare_output = 0b10;
-pub const default_frequency_hz = uno.CPU_FREQ / timer_prescaler / 256;
+pub const default_frequency_hz = platform.CPU_FREQ / timer_prescaler / 256;
 
 var timer1_initialized = false;
 var timer2_initialized = false;
 
-const Channel = enum {
-    timer1_a,
-    timer1_b,
-    timer2_a,
-    timer2_b,
-};
-
 /// Returns whether PWM is supported.
 pub fn supports(comptime pin: gpio.Pin) bool {
-    return switch (pin) {
-        .D3, .D9, .D10, .D11 => true,
-        else => false,
-    };
+    return platform.pwmChannel(pin) != null;
 }
 
 /// Initializes PWM on a pin.
@@ -54,15 +44,16 @@ pub fn write(comptime pin: gpio.Pin, duty: u8) void {
     }
 }
 
-fn channelForPin(comptime pin: gpio.Pin) Channel {
-    return switch (pin) {
-        .D9 => .timer1_a,
-        .D10 => .timer1_b,
-        .D11 => .timer2_a,
-        .D3 => .timer2_b,
-        .D5, .D6 => @compileError("pwm: D5 and D6 use Timer0, which is reserved by hal.time"),
-        else => @compileError("pwm: unsupported pin, use one of D3, D9, D10, or D11"),
-    };
+fn channelForPin(comptime pin: gpio.Pin) platform.PwmChannel {
+    if (platform.pwmChannel(pin)) |channel| {
+        return channel;
+    }
+
+    if (platform.usesReservedTimer0Pwm(pin)) {
+        @compileError("pwm: selected pin uses Timer0, which is reserved by hal.time");
+    }
+
+    @compileError("pwm: unsupported pin for the selected board");
 }
 
 fn ensureTimer1() void {
@@ -90,7 +81,7 @@ fn ensureTimer2() void {
     timer2_initialized = true;
 }
 
-fn enableChannel(channel: Channel) void {
+fn enableChannel(channel: platform.PwmChannel) void {
     switch (channel) {
         .timer1_a => regs.TC1.TCCR1A.modify(.{ .COM1A = non_inverting_compare_output }),
         .timer1_b => regs.TC1.TCCR1A.modify(.{ .COM1B = non_inverting_compare_output }),

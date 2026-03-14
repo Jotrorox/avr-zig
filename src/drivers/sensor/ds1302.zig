@@ -1,7 +1,7 @@
 const gpio = @import("../../hal/gpio.zig");
-const uno = @import("../../board/uno.zig");
+const platform = @import("../../platform/current.zig");
 
-const delay_cycles = @max(uno.CPU_FREQ / 8_000_000, 1);
+const delay_cycles = @max(platform.CPU_FREQ / 8_000_000, 1);
 
 const register_seconds = 0x80;
 const register_minutes = 0x82;

@@ -1,5 +1,6 @@
 const gpio = @import("../../hal/gpio.zig");
-const regs = @import("../../mcu/atmega328p.zig").registers;
+const platform = @import("../../platform/current.zig");
+const regs = platform.registers;
 
 pub const refresh_hz: u16 = 50;
 pub const min_pulse_us: u16 = 1000;
@@ -17,10 +18,7 @@ var active = false;
 
 /// Returns whether servo output is supported.
 pub fn supports(comptime pin: gpio.Pin) bool {
-    return switch (pin) {
-        .D9, .D10 => true,
-        else => false,
-    };
+    return platform.servoChannel(pin) != null;
 }
 
 /// Reports whether Timer1 is in use.
@@ -64,9 +62,9 @@ pub fn writeMicros(comptime pin: gpio.Pin, pulse_us: u16) void {
     const clamped = clampPulse(pulse_us);
     const ticks: u16 = @intCast(@as(u32, clamped) * ticks_per_us);
 
-    switch (pin) {
-        .D9 => regs.TC1.OCR1A.* = ticks,
-        .D10 => regs.TC1.OCR1B.* = ticks,
+    switch (platform.servoChannel(pin).?) {
+        .timer1_a => regs.TC1.OCR1A.* = ticks,
+        .timer1_b => regs.TC1.OCR1B.* = ticks,
         else => unreachable,
     }
 }
@@ -83,7 +81,7 @@ pub fn writeDegrees(comptime pin: gpio.Pin, degrees: u8) void {
 
 fn ensureSupported(comptime pin: gpio.Pin) void {
     if (!supports(pin)) {
-        @compileError("servo: unsupported pin, use D9 or D10 on the Uno");
+        @compileError("servo: unsupported pin for the selected board");
     }
 }
 
@@ -94,9 +92,9 @@ fn clampPulse(pulse_us: u16) u16 {
 }
 
 fn enableChannel(comptime pin: gpio.Pin) void {
-    switch (pin) {
-        .D9 => regs.TC1.TCCR1A.modify(.{ .COM1A = non_inverting_compare_output }),
-        .D10 => regs.TC1.TCCR1A.modify(.{ .COM1B = non_inverting_compare_output }),
+    switch (platform.servoChannel(pin).?) {
+        .timer1_a => regs.TC1.TCCR1A.modify(.{ .COM1A = non_inverting_compare_output }),
+        .timer1_b => regs.TC1.TCCR1A.modify(.{ .COM1B = non_inverting_compare_output }),
         else => unreachable,
     }
 }

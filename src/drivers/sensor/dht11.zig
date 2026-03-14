@@ -1,11 +1,11 @@
-const uno = @import("../../board/uno.zig");
 const gpio = @import("../../hal/gpio.zig");
 const time = @import("../../hal/time.zig");
+const platform = @import("../../platform/current.zig");
 
 const sample_offset_us: u16 = 35;
 const response_timeout_us: u16 = 120;
 const bit_timeout_us: u16 = 90;
-const cycles_per_us = uno.CPU_FREQ / 1_000_000;
+const cycles_per_us = platform.CPU_FREQ / 1_000_000;
 
 pub const Error = error{
     Timeout,
