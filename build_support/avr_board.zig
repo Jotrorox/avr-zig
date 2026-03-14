@@ -47,6 +47,12 @@ pub fn spec(board: Board) Spec {
     };
 }
 
+pub fn addBoardConfig(module: *std.Build.Module, b: *std.Build, board: Board) void {
+    const options = b.addOptions();
+    options.addOption([]const u8, "board_name", @tagName(board));
+    module.addOptions("avr_zig_config", options);
+}
+
 pub fn defaultTty(_: Board) []const u8 {
     return "/dev/ttyACM0";
 }

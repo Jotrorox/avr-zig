@@ -1,5 +1,6 @@
 const builtin = @import("builtin");
 const std = @import("std");
+const config = @import("avr_zig_config");
 
 const uno_board = @import("../board/uno.zig");
 const mega_board = @import("../board/mega2560.zig");
@@ -12,6 +13,8 @@ pub const Board = enum {
 };
 
 pub const current_board: Board = blk: {
+    _ = config.board_name;
+
     if (builtin.target.cpu.arch != .avr) {
         @compileError("avr_zig supports only AVR freestanding targets");
     }
