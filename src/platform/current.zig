@@ -449,7 +449,7 @@ pub fn portInputRegister(comptime port: Port) *volatile u8 {
     return switch (current_board) {
         .uno => switch (port) {
             .B => registers.PORTB.PINB,
-            .C => registers.PORTC.PINC,
+            .C => @ptrCast(registers.PORTC.PINC),
             .D => registers.PORTD.PIND,
             else => @compileError("port is not available on the Uno"),
         },
@@ -473,7 +473,7 @@ pub fn portDirectionRegister(comptime port: Port) *volatile u8 {
     return switch (current_board) {
         .uno => switch (port) {
             .B => registers.PORTB.DDRB,
-            .C => registers.PORTC.DDRC,
+            .C => @ptrCast(registers.PORTC.DDRC),
             .D => registers.PORTD.DDRD,
             else => @compileError("port is not available on the Uno"),
         },
@@ -497,7 +497,7 @@ pub fn portOutputRegister(comptime port: Port) *volatile u8 {
     return switch (current_board) {
         .uno => switch (port) {
             .B => registers.PORTB.PORTB,
-            .C => registers.PORTC.PORTC,
+            .C => @ptrCast(registers.PORTC.PORTC),
             .D => registers.PORTD.PORTD,
             else => @compileError("port is not available on the Uno"),
         },

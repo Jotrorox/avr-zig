@@ -65,7 +65,6 @@ pub fn writeMicros(comptime pin: gpio.Pin, pulse_us: u16) void {
     switch (platform.servoChannel(pin).?) {
         .timer1_a => regs.TC1.OCR1A.* = ticks,
         .timer1_b => regs.TC1.OCR1B.* = ticks,
-        else => unreachable,
     }
 }
 
@@ -95,6 +94,5 @@ fn enableChannel(comptime pin: gpio.Pin) void {
     switch (platform.servoChannel(pin).?) {
         .timer1_a => regs.TC1.TCCR1A.modify(.{ .COM1A = non_inverting_compare_output }),
         .timer1_b => regs.TC1.TCCR1A.modify(.{ .COM1B = non_inverting_compare_output }),
-        else => unreachable,
     }
 }
