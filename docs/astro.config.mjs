@@ -21,7 +21,32 @@ export default defineConfig({
         },
         {
           label: "Reference",
-          autogenerate: { directory: "reference" },
+          items: [
+            {
+              label: "HAL",
+              autogenerate: { directory: "reference/hal" },
+            },
+            {
+              label: "Display Drivers",
+              autogenerate: { directory: "reference/display" },
+            },
+            {
+              label: "Sensor Drivers",
+              autogenerate: { directory: "reference/sensor" },
+            },
+            {
+              label: "Actuator Drivers",
+              autogenerate: { directory: "reference/actuator" },
+            },
+            {
+              label: "RFID Drivers",
+              autogenerate: { directory: "reference/rfid" },
+            },
+            {
+              label: "Platform",
+              autogenerate: { directory: "reference/platform" },
+            },
+          ],
         },
       ],
     }),
