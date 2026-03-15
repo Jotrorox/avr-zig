@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> This repository has moved to the **Arc Embed** organization.
+> Please use the new canonical location:
+> https://github.com/arcembed/avr-zig
+
+
 # avr_zig
 
 `avr_zig` is a Zig library for bare-metal Arduino projects on AVR microcontrollers.
