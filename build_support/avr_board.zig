@@ -86,8 +86,11 @@ pub fn addBoardConfig(module: *std.Build.Module, b: *std.Build, board: Board) vo
     module.addOptions("avr_zig_config", options);
 }
 
-pub fn defaultTty(_: Board) []const u8 {
-    return "/dev/ttyACM0";
+pub fn defaultTty(board: Board) []const u8 {
+    return switch (board) {
+        .nano => "/dev/ttyUSB0",
+        .uno, .mega2560 => "/dev/ttyACM0",
+    };
 }
 
 pub fn addUploadStep(

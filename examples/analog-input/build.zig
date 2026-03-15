@@ -1,43 +1,34 @@
 const std = @import("std");
-const avr_board = @import("build_support.zig");
 
 pub fn build(b: *std.Build) void {
-    const optimize: std.builtin.OptimizeMode = .ReleaseSafe;
-    const board = avr_board.resolveBoard(b);
-    const spec = avr_board.spec(board);
-    const tty = b.option([]const u8, "tty", "Serial device for avrdude and screen") orelse avr_board.defaultTty(board);
-    const upload_profile = avr_board.resolveUploadProfile(b);
+    const board = b.option([]const u8, "board", "Target board") orelse "uno";
+    const tty = b.option([]const u8, "tty", "Serial device");
+    const upload_profile = b.option([]const u8, "upload_profile", "Upload profile") orelse "default";
+    const optimize = b.option(std.builtin.OptimizeMode, "optimize", "Optimization mode") orelse .ReleaseSafe;
 
-    const avr_dep = b.dependency("avr_zig", .{ .board = @tagName(board) });
-    const avr_mod = avr_dep.module("avr_zig");
-    const target = b.resolveTargetQuery(spec.target_query);
-    const app_mod = b.createModule(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
-        .imports = &.{.{ .name = "avr_zig", .module = avr_mod }},
-    });
-
-    const exe = b.addExecutable(.{
-        .name = "analog-input",
-        .root_module = b.createModule(.{
-            .root_source_file = avr_dep.path("src/runtime/app_root.zig"),
-            .target = target,
+    const avr = if (tty) |serial_device|
+        b.dependency("avr_zig", .{
+            .app_root = b.path("src/main.zig"),
+            .app_name = "analog-input",
+            .board = board,
+            .tty = serial_device,
+            .upload_profile = upload_profile,
             .optimize = optimize,
-            .imports = &.{
-                .{ .name = "avr_zig", .module = avr_mod },
-                .{ .name = "app", .module = app_mod },
-            },
-        }),
-    });
-    exe.bundle_compiler_rt = false;
-    exe.bundle_ubsan_rt = false;
-    exe.linker_script = avr_dep.path(spec.linker_script);
+        })
+    else
+        b.dependency("avr_zig", .{
+            .app_root = b.path("src/main.zig"),
+            .app_name = "analog-input",
+            .board = board,
+            .upload_profile = upload_profile,
+            .optimize = optimize,
+        });
 
-    b.installArtifact(exe);
+    b.installArtifact(avr.artifact("analog-input"));
 
-    const bin_path = b.getInstallPath(.bin, exe.out_filename);
-    avr_board.addUploadStep(b, board, upload_profile, tty, "Flash the analog input example with avrdude", bin_path);
-    avr_board.addObjdumpStep(b, "Disassemble the analog input firmware", bin_path);
-    avr_board.addMonitorStep(b, tty);
+    for (&[_][]const u8{ "upload", "objdump", "monitor" }) |step_name| {
+        const child = avr.builder.top_level_steps.get(step_name) orelse @panic("missing avr_zig step");
+        const step = b.step(step_name, child.description);
+        step.dependOn(&child.step);
+    }
 }

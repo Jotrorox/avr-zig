@@ -10,6 +10,5 @@
         "build_support",
         "README.md",
         "src",
-        "examples",
     },
 }

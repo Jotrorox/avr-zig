@@ -16,7 +16,7 @@ The package is organized by layer:
 - `src/drivers` contains higher-level device drivers such as the SSD1306 display driver, a lightweight DHT11 sensor driver and more.
 - `src/runtime` contains startup support used by applications and examples.
 
-The root `build.zig` builds the library archive only. Select the target board with `-Dboard=uno`, `-Dboard=nano`, or `-Dboard=mega2560`. Upload, serial monitor, and objdump steps live in each example's `build.zig` so the examples double as standalone reference projects.
+The root `build.zig` still builds the library archive by default, and the package can now also build downstream AVR firmware directly when consumers pass an application entrypoint through `b.dependency("avr_zig", ...)`.
 
 ## Package usage
 
@@ -33,7 +33,7 @@ pub fn main() void {
 
 Timer-backed helpers such as `avr.hal.time.sleep()` automatically provide their default interrupt handlers. Advanced applications can still override `pub const interrupts.TIMER0_COMPA()` explicitly when they need custom Timer0 behavior.
 
-See the example projects in `examples/` for complete build scripts, linker setup, and flashing commands.
+See the example projects in `examples/` for minimal wrapper `build.zig` files that consume the package-owned firmware flow.
 
 Input handling is split between `avr.hal.gpio` for digital pins and `avr.hal.adc` for blocking 10-bit reads. The Uno target exposes `A0..A5`; the classic Nano target exposes `A0..A7` with `A6/A7` as analog-only pins; the Mega 2560 target exposes `A0..A15`. The repository examples include digital button input, analog input sampling, DHT11 sensor polling, MFRC522 RFID UID reads over SPI, and more.
 
@@ -45,6 +45,53 @@ Build the library archive for a specific board with:
 zig build check -Dboard=uno
 zig build check -Dboard=nano
 zig build check -Dboard=mega2560
+```
+
+Build a downstream application with the package-owned flow using a tiny `build.zig`:
+
+```zig
+const std = @import("std");
+
+pub fn build(b: *std.Build) void {
+    const board = b.option([]const u8, "board", "Target board") orelse "uno";
+    const tty = b.option([]const u8, "tty", "Serial device");
+    const upload_profile = b.option([]const u8, "upload_profile", "Upload profile") orelse "default";
+    const optimize = b.option(std.builtin.OptimizeMode, "optimize", "Optimization mode") orelse .ReleaseSafe;
+
+    const avr = if (tty) |serial_device|
+        b.dependency("avr_zig", .{
+            .app_root = b.path("src/main.zig"),
+            .app_name = "my_app",
+            .board = board,
+            .tty = serial_device,
+            .upload_profile = upload_profile,
+            .optimize = optimize,
+        })
+    else
+        b.dependency("avr_zig", .{
+            .app_root = b.path("src/main.zig"),
+            .app_name = "my_app",
+            .board = board,
+            .upload_profile = upload_profile,
+            .optimize = optimize,
+        });
+
+    b.installArtifact(avr.artifact("my_app"));
+
+    for (&[_][]const u8{ "upload", "objdump", "monitor" }) |step_name| {
+        const child = avr.builder.top_level_steps.get(step_name) orelse @panic("missing avr_zig step");
+        const step = b.step(step_name, child.description);
+        step.dependOn(&child.step);
+    }
+}
+```
+
+Typical usage from your application directory:
+
+```sh
+zig build -Dboard=uno
+zig build upload -Dboard=nano
+zig build monitor -Dboard=mega2560 -Dtty=/dev/ttyACM0
 ```
 
 The public API stays the same across all three targets. `avr.gpio.Pin` and `avr.adc.AnalogPin` are selected from the active compile target, so existing Uno applications keep compiling unchanged while Nano builds gain `A6/A7` analog inputs and Mega builds gain the larger Mega pin set.
@@ -61,4 +108,4 @@ Classic Nano support reuses the existing `ATmega328P` runtime and linker script.
 - `avr.hal.pwm` on the Mega 2560 supports `D2`, `D3`, `D5`, `D6`, `D7`, `D8`, `D9`, `D10`, `D11`, `D12`, `D13`, `D44`, `D45`, and `D46`.
 - The servo driver stays Timer1-based. The default servo example uses `D9` on the Uno and classic Nano, and `D11` on the Mega 2560.
 - Classic Nano `A6` and `A7` are available through `avr.hal.adc` only; they are not part of `avr.gpio.Pin`.
-- Example `upload` steps accept `-Dupload_profile=default` or `-Dupload_profile=nano_old_bootloader`. The old-bootloader option is only relevant to classic Nano boards that still use the older 57600 baud bootloader.
+- Firmware builds accept `-Dupload_profile=default` or `-Dupload_profile=nano_old_bootloader`. The old-bootloader option is only relevant to classic Nano boards that still use the older 57600 baud bootloader.
