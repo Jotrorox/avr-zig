@@ -38,5 +38,6 @@ Available examples:
 - `pwm-fade`
 - `pwm-rgb`
 - `servo`
+- `sw-520d`
 - `ssd1306-demo`
 - `uart`

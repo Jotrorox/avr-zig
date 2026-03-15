@@ -1,0 +1,14 @@
+.{
+    .name = .sw_520d_example,
+    .version = "0.1.0",
+    .fingerprint = 0x8bdc0c21c0ea8e8f,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

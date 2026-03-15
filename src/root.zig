@@ -33,6 +33,7 @@ pub const drivers = struct {
         pub const dht11 = @import("drivers/sensor/dht11.zig");
         pub const ds1302 = @import("drivers/sensor/ds1302.zig");
         pub const hc_sr04 = @import("drivers/sensor/hc_sr04.zig");
+        pub const sw_520d = @import("drivers/sensor/sw_520d.zig");
     };
 
     pub const rfid = struct {
