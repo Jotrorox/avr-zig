@@ -13,7 +13,7 @@ The package is organized by layer:
 - `src/mcu` contains MCU register definitions.
 - `src/board` contains board-specific configuration such as board clocks.
 - `src/hal` contains low-level peripheral access such as GPIO, ADC, I2C, PWM, SPI, time, and UART.
-- `src/drivers` contains higher-level device drivers such as the SSD1306 display driver, a lightweight DHT11 sensor driver and more.
+- `src/drivers` contains higher-level device drivers such as SSD1306, HD44780, 7-segment display helpers, a lightweight DHT11 sensor driver and more.
 - `src/runtime` contains startup support used by applications and examples.
 
 The root `build.zig` still builds the library archive by default, and the package can now also build downstream AVR firmware directly when consumers pass an application entrypoint through `b.dependency("avr_zig", ...)`.
@@ -35,7 +35,41 @@ Timer-backed helpers such as `avr.hal.time.sleep()` automatically provide their 
 
 See the example projects in `examples/` for minimal wrapper `build.zig` files that consume the package-owned firmware flow.
 
-Input handling is split between `avr.hal.gpio` for digital pins and `avr.hal.adc` for blocking 10-bit reads. The Uno target exposes `A0..A5`; the classic Nano target exposes `A0..A7` with `A6/A7` as analog-only pins; the Mega 2560 target exposes `A0..A15`. The repository examples include digital button input, analog input sampling, KY-038 analog and digital sound sensing, DHT11 sensor polling, MFRC522 RFID UID reads over SPI, and more.
+Input handling is split between `avr.hal.gpio` for digital pins and `avr.hal.adc` for blocking 10-bit reads. The Uno target exposes `A0..A5`; the classic Nano target exposes `A0..A7` with `A6/A7` as analog-only pins; the Mega 2560 target exposes `A0..A15`. The repository examples include digital button input, analog input sampling, single-digit and 4-digit 7-segment displays, KY-038 analog and digital sound sensing, DHT11 sensor polling, MFRC522 RFID UID reads over SPI, and more.
+
+## 7-Segment Displays
+
+Use `avr.drivers.display.seven_segment` for direct-wired 7-segment modules.
+
+- `SingleDigit(...)` handles one digit and exposes `showChar()`, `showDigit()`, `showHex()`, and `setDecimalPoint()`.
+- `FourDigit(...)` handles a multiplexed 4-digit display and exposes `write()`, `showNumber()`, `setDigit()`, `setDecimalPoint()`, `refresh()`, and `refreshFor()`.
+- `Common.cathode` drives lit segments high. `Common.anode` drives lit segments low.
+- The 4-digit helper assumes each digit common pin is wired directly and should be selected with the opposite polarity from the segment pins.
+
+Typical setup:
+
+```zig
+const avr = @import("avr_zig");
+const seven_segment = avr.drivers.display.seven_segment;
+const time = avr.time;
+
+const Display4 = seven_segment.FourDigit(
+    .{ .a = .D2, .b = .D3, .c = .D4, .d = .D5, .e = .D6, .f = .D7, .g = .D8, .dp = .D9 },
+    .{ .d1 = .D10, .d2 = .D11, .d3 = .D12, .d4 = .D13 },
+    .cathode,
+);
+
+var display: Display4 = .{};
+
+pub fn main() void {
+    display.init();
+    display.showNumber(1234);
+
+    while (true) {
+        display.refreshFor(1000, 2);
+    }
+}
+```
 
 ## Board Selection
 

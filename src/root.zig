@@ -26,6 +26,7 @@ pub const drivers = struct {
 
     pub const display = struct {
         pub const hd44780_i2c = @import("drivers/display/hd44780_i2c.zig");
+        pub const seven_segment = @import("drivers/display/seven_segment.zig");
         pub const ssd1306 = @import("drivers/display/ssd1306.zig");
     };
 

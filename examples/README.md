@@ -39,6 +39,8 @@ Available examples:
 - `mfrc522`
 - `pwm-fade`
 - `pwm-rgb`
+- `seven-segment-4-digit`
+- `seven-segment-single`
 - `servo`
 - `sw-520d`
 - `ssd1306-demo`
