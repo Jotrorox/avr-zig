@@ -28,7 +28,7 @@ pub const Error = error{
 |---|---|
 | `EchoStartTimeout` | The echo pin did not go high within the timeout window |
 | `EchoEndTimeout` | The echo pin did not return low within the timeout window |
-| `Timer1Unavailable` | Timer1 is currently in use by the [servo driver](/reference/actuator/servo/) |
+| `Timer1Unavailable` | Timer1 is currently in use by the [servo driver](../actuator/servo/) |
 
 ### `Reading`
 
@@ -85,7 +85,7 @@ Performs a single distance measurement. Calls `init` internally, then sends a 10
 **Behavior:**
 
 1. Calls `init` to configure the pins
-2. Checks if the [servo driver](/reference/actuator/servo/) has Timer1 active -- returns `Timer1Unavailable` if so
+2. Checks if the [servo driver](../actuator/servo/) has Timer1 active -- returns `Timer1Unavailable` if so
 3. Saves the current Timer1 register state and configures Timer1 in normal mode with prescaler /8
 4. Sends a 10 us trigger pulse on `trig_pin`
 5. Waits for `echo_pin` to go high (start of echo) -- returns `EchoStartTimeout` on failure
@@ -94,7 +94,7 @@ Performs a single distance measurement. Calls `init` internally, then sends a 10
 8. Restores the original Timer1 state before returning
 
 :::caution
-Timer1 is shared with the [servo driver](/reference/actuator/servo/). You cannot use both drivers simultaneously. The HC-SR04 driver borrows Timer1 only for the duration of each `read` call and restores its previous configuration afterward.
+Timer1 is shared with the [servo driver](../actuator/servo/). You cannot use both drivers simultaneously. The HC-SR04 driver borrows Timer1 only for the duration of each `read` call and restores its previous configuration afterward.
 :::
 
 ## Example

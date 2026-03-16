@@ -259,4 +259,4 @@ This is expected on the first build. Zig will print the correct hash for the `av
 
 ## Next steps
 
-Your LED is blinking -- now make it interactive. The [Digital I/O](/guides/digital-io/) guide shows you how to read buttons, drive external LEDs, and send debug messages over serial.
+Your LED is blinking -- now make it interactive. The [Digital I/O](./digital-io/) guide shows you how to read buttons, drive external LEDs, and send debug messages over serial.

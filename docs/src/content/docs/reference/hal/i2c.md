@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-The I2C module provides master-mode communication over the TWI (Two-Wire Interface) bus. It is used by display drivers like the [SSD1306](/reference/display/ssd1306/) and [HD44780](/reference/display/hd44780/).
+The I2C module provides master-mode communication over the TWI (Two-Wire Interface) bus. It is used by display drivers like the [SSD1306](../display/ssd1306/) and [HD44780](../display/hd44780/).
 
 ```zig
 const avr = @import("avr_zig");

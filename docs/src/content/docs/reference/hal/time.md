@@ -13,7 +13,7 @@ const time = avr.time;
 ```
 
 :::caution
-Timer0 is **reserved** by this module. Pins that use Timer0 for PWM (D5 and D6 on the Uno/Nano) cannot be used with the [PWM](/reference/hal/pwm/) module.
+Timer0 is **reserved** by this module. Pins that use Timer0 for PWM (D5 and D6 on the Uno/Nano) cannot be used with the [PWM](./pwm/) module.
 :::
 
 ## Functions

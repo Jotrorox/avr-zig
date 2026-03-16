@@ -13,7 +13,7 @@ const pwm = avr.pwm;
 ```
 
 :::caution
-Timer0 is reserved by the [Time](/reference/hal/time/) module for the system tick. Pins that use Timer0 (D5 and D6 on the Uno/Nano) are **not** available for PWM and will produce a compile error.
+Timer0 is reserved by the [Time](./time/) module for the system tick. Pins that use Timer0 (D5 and D6 on the Uno/Nano) are **not** available for PWM and will produce a compile error.
 :::
 
 ## PWM-capable pins

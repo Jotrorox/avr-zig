@@ -2,12 +2,10 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
-const pagesConfig = process.env.ASTRO_SITE
-  ? {
-      site: process.env.ASTRO_SITE,
-      base: process.env.ASTRO_BASE ?? "/",
-    }
-  : {};
+const pagesConfig = {
+  ...(process.env.ASTRO_SITE ? { site: process.env.ASTRO_SITE } : {}),
+  ...(process.env.ASTRO_BASE ? { base: process.env.ASTRO_BASE } : {}),
+};
 
 // https://astro.build/config
 export default defineConfig({

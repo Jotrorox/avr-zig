@@ -107,9 +107,9 @@ Different peripherals share hardware timers. Be aware of these constraints:
 
 | Timer | Used by | Notes |
 |---|---|---|
-| Timer0 | [`time`](/reference/hal/time/) | Reserved after `time.init()`. PWM on Timer0 pins (`D5`/`D6` on Uno/Nano, `D4` on Mega) is blocked. |
-| Timer1 | [`servo`](/reference/actuator/servo/), [`hc_sr04`](/reference/sensor/hc-sr04/), [`pwm`](/reference/hal/pwm/) | Servo takes exclusive ownership. HC-SR04 borrows temporarily and restores state. |
-| Timer2+ | [`pwm`](/reference/hal/pwm/) | Available for PWM output on supported pins. |
+| Timer0 | [`time`](../hal/time/) | Reserved after `time.init()`. PWM on Timer0 pins (`D5`/`D6` on Uno/Nano, `D4` on Mega) is blocked. |
+| Timer1 | [`servo`](../actuator/servo/), [`hc_sr04`](../sensor/hc-sr04/), [`pwm`](../hal/pwm/) | Servo takes exclusive ownership. HC-SR04 borrows temporarily and restores state. |
+| Timer2+ | [`pwm`](../hal/pwm/) | Available for PWM output on supported pins. |
 
 ## Build options
 

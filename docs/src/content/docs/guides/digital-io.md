@@ -9,7 +9,7 @@ This guide covers digital input and output -- reading a push button and driving 
 
 ## What you'll need
 
-- A working AVR-Zig project (see [Your First Project](/guides/basic/))
+- A working AVR-Zig project (see [Your First Project](./basic/))
 - A push button (momentary tactile switch)
 - An LED (any color) and a 220-330 ohm resistor
 - A breadboard and jumper wires
@@ -211,4 +211,4 @@ All pin arguments are **comptime** -- they must be known at compile time (like `
 
 ## Next steps
 
-You can now read digital inputs and control outputs. The [Analog & PWM](/guides/analog-and-pwm/) guide shows you how to read analog sensors with the ADC and control LED brightness with pulse-width modulation.
+You can now read digital inputs and control outputs. The [Analog & PWM](./analog-and-pwm/) guide shows you how to read analog sensors with the ADC and control LED brightness with pulse-width modulation.

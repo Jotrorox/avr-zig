@@ -7,7 +7,7 @@ sidebar:
 
 This guide shows you how to use two of the most common hobbyist displays with AVR-Zig: the **SSD1306** 128x64 OLED (graphical, over I2C) and the **HD44780** 16x2 character LCD (text, over an I2C backpack).
 
-Both communicate over I2C, so make sure you're comfortable with the basics from the [Serial Communication](/guides/serial-communication/) guide.
+Both communicate over I2C, so make sure you're comfortable with the basics from the [Serial Communication](./serial-communication/) guide.
 
 ## SSD1306 OLED display
 
@@ -128,7 +128,7 @@ Both return `bool`. `init()` returns `false` if the display doesn't respond at t
 Coordinates are in pixels. `(0, 0)` is the top-left corner. The default font is `ssd1306.default_font` (5x7 pixels per character).
 
 :::tip[If the display doesn't respond]
-Some SSD1306 modules use address `0x3D` instead of the default `0x3C`. Use the I2C scan example from the [Serial Communication](/guides/serial-communication/) guide to find the actual address, then set it before calling `init()`:
+Some SSD1306 modules use address `0x3D` instead of the default `0x3C`. Use the I2C scan example from the [Serial Communication](./serial-communication/) guide to find the actual address, then set it before calling `init()`:
 ```zig
 display.address = 0x3D;
 ```
@@ -261,4 +261,4 @@ AVR-Zig also includes a driver for 7-segment displays (single digit and 4-digit 
 
 ## Next steps
 
-Now that you can show information on a display, try reading data from sensors. The [Sensors](/guides/sensors/) guide covers the DHT11 temperature/humidity sensor and the HC-SR04 ultrasonic distance sensor.
+Now that you can show information on a display, try reading data from sensors. The [Sensors](./sensors/) guide covers the DHT11 temperature/humidity sensor and the HC-SR04 ultrasonic distance sensor.

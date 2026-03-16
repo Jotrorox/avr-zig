@@ -41,7 +41,7 @@ The servo driver uses Timer1 output-compare channels. Only specific pins support
 You can attach up to two servos simultaneously (one per channel).
 
 :::caution
-The servo driver takes exclusive ownership of Timer1. While active, the [HC-SR04 ultrasonic driver](/reference/sensor/hc-sr04/) cannot take measurements (it will return `Timer1Unavailable`). Timer1-based [PWM](/reference/hal/pwm/) channels are also unavailable while the servo is active.
+The servo driver takes exclusive ownership of Timer1. While active, the [HC-SR04 ultrasonic driver](../sensor/hc-sr04/) cannot take measurements (it will return `Timer1Unavailable`). Timer1-based [PWM](../hal/pwm/) channels are also unavailable while the servo is active.
 :::
 
 ## Functions

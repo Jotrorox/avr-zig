@@ -9,7 +9,7 @@ This guide covers two complementary features: reading analog values from sensors
 
 ## What you'll need
 
-- A working AVR-Zig project (see [Your First Project](/guides/basic/))
+- A working AVR-Zig project (see [Your First Project](./basic/))
 - A potentiometer (any value from 1K to 100K works)
 - An LED and a 220-330 ohm resistor
 - A breadboard and jumper wires
@@ -241,4 +241,4 @@ This is evaluated entirely at compile time -- no runtime cost, no `if` branch in
 
 ## Next steps
 
-You now know how to read analog sensors and control output intensity. The [Serial Communication](/guides/serial-communication/) guide dives deeper into UART and introduces I2C, which you'll need for displays and many sensors.
+You now know how to read analog sensors and control output intensity. The [Serial Communication](./serial-communication/) guide dives deeper into UART and introduces I2C, which you'll need for displays and many sensors.

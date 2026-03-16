@@ -9,7 +9,7 @@ This guide covers the two main communication interfaces in AVR-Zig: **UART** for
 
 ## What you'll need
 
-- A working AVR-Zig project (see [Your First Project](/guides/basic/))
+- A working AVR-Zig project (see [Your First Project](./basic/))
 - For the I2C section: any I2C device (an SSD1306 OLED or an LCD with an I2C backpack are common choices)
 - A breadboard and jumper wires
 
@@ -249,4 +249,4 @@ UART is currently transmit-only -- there is no receive function yet. Serial data
 
 ## Next steps
 
-With UART for debugging and I2C for peripherals, you're ready to drive displays. The [Displays](/guides/displays/) guide shows you how to use an SSD1306 OLED and an HD44780 LCD.
+With UART for debugging and I2C for peripherals, you're ready to drive displays. The [Displays](./displays/) guide shows you how to use an SSD1306 OLED and an HD44780 LCD.
