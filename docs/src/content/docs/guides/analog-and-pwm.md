@@ -70,7 +70,7 @@ Zig uses explicit integer sizes. `u16` means an unsigned 16-bit integer (0 to 65
 
 ### Formatting numbers for serial output
 
-The UART module sends raw bytes and strings -- it has no built-in number formatting. You need small helper functions to convert numbers to text. Here's the hex formatter used above and a decimal formatter you'll find useful:
+`uart.write()` now handles decimal integers, booleans, and fixed-precision floats directly. The remaining common helper is hexadecimal formatting, which is what this example uses:
 
 ```zig
 fn writeHexWord(value: u16) void {
@@ -83,13 +83,6 @@ fn writeHexWord(value: u16) void {
 fn writeHexNibble(value: u8) void {
     const digit = if (value < 10) '0' + value else 'A' + (value - 10);
     uart.write_ch(digit);
-}
-
-fn writeDecimal(value: u16) void {
-    if (value >= 1000) uart.write_ch('0' + @as(u8, @intCast(value / 1000 % 10)));
-    if (value >= 100) uart.write_ch('0' + @as(u8, @intCast(value / 100 % 10)));
-    if (value >= 10) uart.write_ch('0' + @as(u8, @intCast(value / 10 % 10)));
-    uart.write_ch('0' + @as(u8, @intCast(value % 10)));
 }
 ```
 
@@ -195,26 +188,13 @@ pub fn main() void {
         pwm.write(.D9, duty);
 
         uart.write("adc=");
-        writeDecimal(sample);
+        uart.write(sample);
         uart.write(" duty=");
-        writeDecimalU8(duty);
+        uart.write(duty);
         uart.write("\r\n");
 
         time.sleep(50);
     }
-}
-
-fn writeDecimal(value: u16) void {
-    if (value >= 1000) uart.write_ch('0' + @as(u8, @intCast(value / 1000 % 10)));
-    if (value >= 100) uart.write_ch('0' + @as(u8, @intCast(value / 100 % 10)));
-    if (value >= 10) uart.write_ch('0' + @as(u8, @intCast(value / 10 % 10)));
-    uart.write_ch('0' + @as(u8, @intCast(value % 10)));
-}
-
-fn writeDecimalU8(value: u8) void {
-    if (value >= 100) uart.write_ch('0' + value / 100);
-    if (value >= 10) uart.write_ch('0' + value / 10 % 10);
-    uart.write_ch('0' + value % 10);
 }
 ```
 

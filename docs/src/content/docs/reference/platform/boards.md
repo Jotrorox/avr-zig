@@ -169,7 +169,7 @@ const gpio = avr.gpio;
 const uart = avr.uart;
 
 pub fn main() void {
-    uart.init();
+    uart.init(115200);
 
     // Board-aware pin selection
     const led_pin: gpio.Pin = switch (avr.current_board) {

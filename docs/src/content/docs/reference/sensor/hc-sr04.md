@@ -106,12 +106,12 @@ const time = avr.time;
 const hc_sr04 = avr.drivers.sensor.hc_sr04;
 
 pub fn main() void {
-    uart.init();
+    uart.init(115200);
     time.init();
 
     while (true) {
         if (hc_sr04.read(.D3, .D2)) |reading| {
-            uart.writeInt(u16, reading.distance_cm);
+            uart.write(reading.distance_cm);
             uart.write(" cm\r\n");
         } else |_| {
             uart.write("HC-SR04 read failed\r\n");

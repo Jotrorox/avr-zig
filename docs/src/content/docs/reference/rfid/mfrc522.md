@@ -169,14 +169,14 @@ const mfrc522 = avr.drivers.rfid.mfrc522;
 const Reader = mfrc522.Device(.D10, .D9);
 
 pub fn main() void {
-    uart.init();
+    uart.init(115200);
     time.init();
 
     var reader = Reader{};
     reader.init();
 
     uart.write("MFRC522 version: 0x");
-    uart.writeInt(u8, reader.version());
+    writeHex(reader.version());
     uart.write("\r\n");
 
     while (true) {
@@ -185,7 +185,7 @@ pub fn main() void {
                 uart.write("UID:");
                 for (uid.bytes[0..uid.len]) |byte| {
                     uart.write(" ");
-                    uart.writeInt(u8, byte);
+                    writeHex(byte);
                 }
                 uart.write("\r\n");
                 reader.haltA();
@@ -195,5 +195,14 @@ pub fn main() void {
         }
         time.sleep(250);
     }
+}
+
+fn writeHex(value: u8) void {
+    uart.write_ch(nibbleToHex(value >> 4));
+    uart.write_ch(nibbleToHex(value & 0x0F));
+}
+
+fn nibbleToHex(value: u8) u8 {
+    return if (value < 10) '0' + value else 'A' + (value - 10);
 }
 ```

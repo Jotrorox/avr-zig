@@ -59,11 +59,11 @@ pub fn main() void {
         };
 
         uart.write("humidity=");
-        writeDecimal(reading.humidity);
+        uart.write(reading.humidity);
         uart.write(".");
         writeTwoDigits(reading.humidity_decimal);
         uart.write("% temperature=");
-        writeDecimal(reading.temperature);
+        uart.write(reading.temperature);
         uart.write(".");
         writeTwoDigits(reading.temperature_decimal);
         uart.write("C\r\n");
@@ -105,7 +105,7 @@ If the function succeeds, the `catch` block is skipped entirely and `reading` ho
 | `temperature` | `u8` | Integer part of temperature (e.g., 23) |
 | `temperature_decimal` | `u8` | Decimal part of temperature (e.g., 50 for .50) |
 
-The DHT11 transmits integer and decimal parts separately, so the driver returns them as-is. Format them with a dot in between when printing.
+The DHT11 transmits integer and decimal parts separately, so the driver returns them as-is. `uart.write()` prints the integer parts directly, and a small helper keeps the decimal part zero-padded.
 
 **Possible errors:**
 
@@ -116,49 +116,18 @@ The DHT11 transmits integer and decimal parts separately, so the driver returns 
 
 **The 2-second delay** is important -- the DHT11 needs at least 1 second between readings. Polling faster will produce errors.
 
-### Number formatting helpers
+### Zero-padded decimal helper
 
-The complete example needs these helpers to print the readings:
+The complete example needs one helper to keep the decimal part at exactly two digits:
 
 ```zig
-fn writeDecimal(value: u8) void {
-    var hundreds: u8 = 0;
-    var tens: u8 = 0;
-    var ones = value;
-
-    while (ones >= 100) : (hundreds += 1) {
-        ones -= 100;
-    }
-    while (ones >= 10) : (tens += 1) {
-        ones -= 10;
-    }
-
-    if (hundreds != 0) {
-        uart.write_ch('0' + hundreds);
-        uart.write_ch('0' + tens);
-        uart.write_ch('0' + ones);
-        return;
-    }
-    if (tens != 0) {
-        uart.write_ch('0' + tens);
-    }
-    uart.write_ch('0' + ones);
-}
-
 fn writeTwoDigits(value: u8) void {
-    var tens: u8 = 0;
-    var ones = value;
-
-    while (ones >= 10) : (tens += 1) {
-        ones -= 10;
-    }
-
-    uart.write_ch('0' + tens);
-    uart.write_ch('0' + ones);
+    uart.write_ch('0' + value / 10);
+    uart.write_ch('0' + value % 10);
 }
 ```
 
-`writeDecimal` suppresses leading zeros (so 23 prints as `23`, not `023`). `writeTwoDigits` always prints two digits (so the decimal part `5` prints as `05`).
+`uart.write()` already handles the integer part. `writeTwoDigits` only handles the fixed-width decimal field, so a decimal part of `5` still prints as `05`.
 
 ## HC-SR04 -- ultrasonic distance
 
@@ -208,17 +177,11 @@ pub fn main() void {
         };
 
         uart.write("distance=");
-        writeDecimalU16(reading.distance_cm);
+        uart.write(reading.distance_cm);
         uart.write("cm\r\n");
 
         time.sleep(250);
     }
-}
-
-fn writeDecimalU16(value: u16) void {
-    if (value >= 100) uart.write_ch('0' + @as(u8, @intCast(value / 100 % 10)));
-    if (value >= 10) uart.write_ch('0' + @as(u8, @intCast(value / 10 % 10)));
-    uart.write_ch('0' + @as(u8, @intCast(value % 10)));
 }
 ```
 
@@ -226,7 +189,8 @@ The pattern is similar to the DHT11:
 
 1. **`hc_sr04.init(echo_pin, trig_pin)`** configures the GPIO pins (trigger as output, echo as input).
 2. **`hc_sr04.read(echo_pin, trig_pin)`** triggers a measurement and returns a `Reading` with `distance_cm` and `pulse_width_us`, or an error.
-3. **`catch`** handles errors the same way as the DHT11 example.
+3. **`uart.write(reading.distance_cm)`** formats the `u16` distance directly, so no decimal helper is needed.
+4. **`catch`** handles errors the same way as the DHT11 example.
 
 **The `Reading` struct:**
 

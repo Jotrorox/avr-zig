@@ -16,7 +16,7 @@ This guide covers the two main communication interfaces in AVR-Zig: **UART** for
 ## What you'll learn
 
 - Sending text and numbers over UART
-- Writing reusable number-formatting helpers
+- Which value types `uart.write()` formats for you
 - How the I2C bus works
 - Scanning for I2C devices
 - Sending data to an I2C device
@@ -39,7 +39,7 @@ pub fn main() void {
 
     while (true) {
         uart.write("count=");
-        writeDecimal(counter);
+        uart.write(counter);
         uart.write("\r\n");
 
         counter +%= 1;
@@ -50,7 +50,7 @@ pub fn main() void {
 
 `uart.init(115200)` configures the hardware for 115200 baud, 8 data bits, no parity, 1 stop bit (8N1). Call it once at the start of your program, before any writes. Currently 115200 is the only supported baud rate.
 
-`uart.write(data)` sends a byte slice (a string literal like `"hello"` counts as a byte slice in Zig). `uart.write_ch(byte)` sends a single byte.
+`uart.write(value)` formats and sends strings, booleans, decimal integers, and fixed-precision floats. `uart.write_ch(byte)` still sends one raw byte when you need explicit character output.
 
 :::tip[`+%=` wrapping addition]
 The `+%=` operator is Zig's **wrapping addition**. When `counter` reaches the maximum value of a `u16` (65535), it wraps back to 0 instead of causing a runtime error. This is useful for counters that you want to roll over naturally. Regular `+=` would trap in safe build modes if the value overflows.
@@ -58,21 +58,16 @@ The `+%=` operator is Zig's **wrapping addition**. When `counter` reaches the ma
 
 ### Formatting numbers
 
-UART sends raw bytes. To print a number, you need to convert each digit to its ASCII character. Here are the helper patterns used throughout the AVR-Zig examples:
-
-**Decimal (base 10):**
+`uart.write()` now handles the common scalar cases directly:
 
 ```zig
-fn writeDecimal(value: u16) void {
-    if (value >= 10000) uart.write_ch('0' + @as(u8, @intCast(value / 10000 % 10)));
-    if (value >= 1000) uart.write_ch('0' + @as(u8, @intCast(value / 1000 % 10)));
-    if (value >= 100) uart.write_ch('0' + @as(u8, @intCast(value / 100 % 10)));
-    if (value >= 10) uart.write_ch('0' + @as(u8, @intCast(value / 10 % 10)));
-    uart.write_ch('0' + @as(u8, @intCast(value % 10)));
-}
+uart.write(@as(u16, 1234));   // 1234
+uart.write(@as(i16, -42));    // -42
+uart.write(true);             // true
+uart.write(@as(f32, 3.1415)); // 3.14
 ```
 
-This prints only the digits that matter -- `42` prints as `42`, not `00042`. Each digit is computed with division and modulo, then shifted into the ASCII range by adding `'0'` (which is 48).
+That covers most debug output. On AVR, runtime float formatting is intended for `f16` / `f32`, and float literals work through Zig's comptime path. The main formatting case that still needs a helper is hexadecimal output:
 
 **Hexadecimal (base 16):**
 
@@ -90,16 +85,8 @@ fn writeHexNibble(value: u8) void {
 
 Hex is useful for I2C addresses, register values, and raw sensor data -- anything where you're thinking in terms of bytes and bits.
 
-**Boolean:**
-
-```zig
-fn writeBool(value: bool) void {
-    uart.write(if (value) "true" else "false");
-}
-```
-
 :::note[Why not use `std.fmt`?]
-Zig's standard library has powerful formatting in `std.fmt`, but it pulls in code that's too large for an AVR's limited flash memory. These small manual formatters compile down to a handful of instructions each.
+Zig's standard library has powerful formatting in `std.fmt`, but it pulls in code that's too large for an AVR's limited flash memory. AVR-Zig's built-in UART formatters cover the common scalar cases without bringing in the full formatter stack, and the remaining custom helpers can stay tiny and specialized.
 :::
 
 ### Viewing serial output
@@ -242,7 +229,7 @@ The `startWrite` / `writeData` / `stop` sequence gives you control over multi-pa
 | Function | Description |
 |---|---|
 | `uart.init(115200)` | Initialize UART at 115200 baud |
-| `uart.write(data)` | Send a byte slice / string |
+| `uart.write(value)` | Send a string, bool, decimal integer, or fixed-precision float |
 | `uart.write_ch(byte)` | Send a single byte |
 
 UART is currently transmit-only -- there is no receive function yet. Serial data is sent on pin D0/D1 (TX/RX) on all supported boards.

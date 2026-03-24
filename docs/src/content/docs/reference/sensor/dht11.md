@@ -90,14 +90,14 @@ const time = avr.time;
 const dht11 = avr.drivers.sensor.dht11;
 
 pub fn main() void {
-    uart.init();
+    uart.init(115200);
     time.init();
 
     while (true) {
         if (dht11.read(.D4)) |reading| {
-            uart.writeInt(u8, reading.temperature);
+            uart.write(reading.temperature);
             uart.write(".");
-            uart.writeInt(u8, reading.temperature_decimal);
+            writeTwoDigits(reading.temperature_decimal);
             uart.write(" C\r\n");
         } else |_| {
             uart.write("DHT11 read failed\r\n");
@@ -105,5 +105,10 @@ pub fn main() void {
 
         time.sleep(2000);
     }
+}
+
+fn writeTwoDigits(value: u8) void {
+    uart.write_ch('0' + value / 10);
+    uart.write_ch('0' + value % 10);
 }
 ```

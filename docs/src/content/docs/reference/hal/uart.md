@@ -35,14 +35,27 @@ Passing any value other than `115200` produces the compile error: `"uart.init cu
 ### `write`
 
 ```zig
-pub fn write(data: []const u8) void
+pub fn write(value: anytype) void
 ```
 
-Sends every byte in `data` over the serial port, then waits for the last byte to finish transmitting.
+Formats and sends a supported value over the serial port, then waits for the last byte to finish transmitting.
 
 | Parameter | Type | Description |
 |---|---|---|
-| `data` | `[]const u8` | The bytes to send |
+| `value` | `anytype` | A supported byte string, `bool`, integer, or float |
+
+Supported inputs:
+
+- Byte strings: `[]const u8`, `[]u8`, `[:0]const u8`, `[:0]u8`, `[N]u8`, `[N:0]u8`, and pointers to those arrays
+- Integers: signed and unsigned integer types, plus comptime integer literals
+- Floats: runtime `f16` / `f32` values and comptime float literals, formatted with exactly 2 decimal places
+- `bool`: printed as `true` or `false`
+
+Notes:
+
+- Integers are always printed in decimal.
+- `u8` values are treated as integers, not ASCII characters. Use `write_ch()` for raw byte / character output.
+- Unsupported types fail at comptime with a compile error.
 
 ### `write_ch`
 
@@ -60,7 +73,13 @@ Sends a single byte. Blocks until the transmit data register is ready, then writ
 
 ```zig
 uart.init(115200);
-uart.write("Hello, world!\r\n");
+uart.write("count=");
+uart.write(@as(u16, 42));
+uart.write(" enabled=");
+uart.write(true);
+uart.write(" volts=");
+uart.write(@as(f32, 3.14));
+uart.write("\r\n");
 ```
 
 :::tip
