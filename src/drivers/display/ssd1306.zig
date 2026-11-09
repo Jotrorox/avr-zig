@@ -134,7 +134,7 @@ pub fn Display(comptime display_width: u8, comptime display_height: u8) type {
         pub const framebuffer_len = buffer_len;
 
         address: u7 = default_address,
-        buffer: [buffer_len]u8 = [_]u8{0} ** buffer_len,
+        buffer: [buffer_len]u8 = @splat(0),
 
         /// Initializes the display.
         pub fn init(self: *Self) bool {

@@ -4,7 +4,7 @@ pub fn build(b: *std.Build) void {
     const board = b.option([]const u8, "board", "Target board") orelse "uno";
     const tty = b.option([]const u8, "tty", "Serial device");
     const upload_profile = b.option([]const u8, "upload_profile", "Upload profile") orelse "default";
-    const optimize = b.option(std.builtin.OptimizeMode, "optimize", "Optimization mode") orelse .ReleaseSafe;
+    const optimize = b.option(std.builtin.OptimizeMode, "optimize", "Optimization mode") orelse .safe;
 
     const avr = if (tty) |serial_device|
         b.dependency("avr_zig", .{

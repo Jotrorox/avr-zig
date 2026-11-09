@@ -3,7 +3,7 @@ const avr_board = @import("build_support/avr_board.zig");
 const avr_firmware = @import("build_support/avr_firmware.zig");
 
 pub fn build(b: *std.Build) void {
-    const optimize = b.option(std.builtin.OptimizeMode, "optimize", "Optimization mode for firmware builds") orelse .ReleaseSafe;
+    const optimize = b.option(std.builtin.OptimizeMode, "optimize", "Optimization mode for firmware builds") orelse .safe;
     const board = avr_board.resolveBoard(b);
     const app_root = b.option(std.Build.LazyPath, "app_root", "Path to the application root source file");
 

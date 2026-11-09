@@ -91,7 +91,7 @@ pub fn FourDigit(comptime segment_pins: SegmentPins, comptime digit_pins: DigitP
     return struct {
         const Self = @This();
 
-        patterns: [4]u8 = [_]u8{0} ** 4,
+        patterns: [4]u8 = @splat(0),
         next_digit: u8 = 0,
 
         /// Configures the pins and clears the display buffer.
@@ -103,7 +103,7 @@ pub fn FourDigit(comptime segment_pins: SegmentPins, comptime digit_pins: DigitP
 
         /// Clears the display buffer and turns all digits off.
         pub fn clear(self: *Self) void {
-            self.patterns = [_]u8{0} ** 4;
+            self.patterns = @splat(0);
             self.next_digit = 0;
             disableAllDigits(digit_pins, common);
             applySegments(segment_pins, common, 0);
@@ -154,7 +154,7 @@ pub fn FourDigit(comptime segment_pins: SegmentPins, comptime digit_pins: DigitP
         pub fn showNumber(self: *Self, value: i16) void {
             @setRuntimeSafety(false);
 
-            var chars = [_]u8{' '} ** 4;
+            var chars: [4]u8 = @splat(' ');
             const negative = value < 0;
             const signed_value = @as(i32, value);
             const magnitude: u16 = @intCast(if (negative) -signed_value else signed_value);

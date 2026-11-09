@@ -96,7 +96,7 @@ pub fn build(b: *std.Build) void {
 
     const optimize = b.option(
         std.builtin.OptimizeMode, "optimize", "Optimization mode",
-    ) orelse .ReleaseSafe;
+    ) orelse .safe;
 
     // Create the avr_zig dependency, passing in our app's source file
     const avr = if (tty) |serial_device|

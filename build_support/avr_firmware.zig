@@ -44,7 +44,11 @@ pub fn addFirmware(b: *std.Build, options: FirmwareOptions) void {
 
     b.installArtifact(exe);
 
-    const bin_path = b.getInstallPath(.bin, exe.out_filename);
+    const bin_path = exe.getEmittedBin(); // .getInstallPath(.bin, exe.out_filename);
+    //     const bin_path = b.graph.path(.install_bin, b.fmt(
+    //        "{s}",
+    //         .{exe.getEmittedBin().getDisplayName()},
+    //     ));
     avr_board.addUploadStep(b, options.board, options.upload_profile, options.tty, "Flash the AVR firmware with avrdude", bin_path);
     avr_board.addObjdumpStep(b, "Disassemble the AVR firmware", bin_path);
     avr_board.addMonitorStep(b, options.tty);
