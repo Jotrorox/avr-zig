@@ -9,7 +9,8 @@ const DemoMode = enum {
     unhandled_vector,
 };
 
-const demo_mode: DemoMode = .panic;
+// const demo_mode: DemoMode = .panic;
+const demo_mode: DemoMode = .unhandled_vector;
 
 pub fn main() void {
     uart.init(115200);

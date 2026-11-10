@@ -52,7 +52,7 @@ Create `build.zig.zon` in the project root. This file tells Zig where to find th
     .name = .my_blink,
     .version = "0.1.0",
     .fingerprint = 0x0000000000000000,
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{
         .avr_zig = .{
             .url = "https://github.com/arcembed/avr-zig/archive/refs/heads/main.tar.gz",

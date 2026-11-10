@@ -2,7 +2,7 @@
     .name = .blink_example,
     .version = "0.1.0",
     .fingerprint = 0x09842e926429cfc8,
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{
         .avr_zig = .{ .path = "../.." },
     },

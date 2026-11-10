@@ -46,7 +46,7 @@ fn renderPage(page: u8) void {
     display.writeLine(0, "ASCII page 1/6");
     display.put(11, 0, '1' + page);
 
-    var row = [_]u8{' '} ** chars_per_page;
+    var row: [chars_per_page]u8 = @splat(' ');
     var index: usize = 0;
     while (index < row.len) : (index += 1) {
         const codepoint = printable_start + page * chars_per_page + @as(u8, @intCast(index));

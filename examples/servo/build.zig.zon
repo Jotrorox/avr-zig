@@ -2,7 +2,7 @@
     .name = .servo_example,
     .version = "0.1.0",
     .fingerprint = 0x19feb8c34895d8b6,
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{
         .avr_zig = .{ .path = "../.." },
     },
