@@ -9,24 +9,31 @@ fn validateInterruptNamespace(comptime Namespace: type, comptime namespace_name:
         @compileError("Not allowed to overload the reset vector in '" ++ namespace_name ++ "'");
     }
 
-    for (std.meta.declarations(Namespace)) |decl| {
-        if (!@hasField(platform.VectorTable, decl.name)) {
-            var msg: []const u8 = "There is no such interrupt as '" ++ decl.name ++ "'. ISRs in '" ++ namespace_name ++ "' must be one of:\n";
-            for (std.meta.fields(platform.VectorTable)) |field| {
-                if (!std.mem.eql(u8, "RESET", field.name)) {
-                    msg = msg ++ "    " ++ field.name ++ "\n";
+    const info = @typeInfo(Namespace);
+    switch (info) {
+        .@"struct" => |strct| {
+            inline for (strct.field_names) |decl| {
+                if (!@hasField(platform.VectorTable, decl)) {
+                    var msg: []const u8 = "There is no such interrupt as '" ++ decl ++ "'. ISRs in '" ++ namespace_name ++ "' must be one of:\n";
+                    for (@typeInfo(platform.VectorTable).@"struct".field_names) |field_name| {
+                        if (!std.mem.eql(u8, "RESET", field_name)) {
+                            msg = msg ++ "    " ++ field_name ++ "\n";
+                        }
+                    }
+                    @compileError(msg);
                 }
             }
-
-            @compileError(msg);
-        }
+        },
+        else => unreachable,
     }
 }
 
 fn exportInterruptHandler(comptime Namespace: type, comptime name: []const u8) void {
     const handler = @field(Namespace, name);
+    // const info =@typeInfo(Namespace);
+
     const calling_convention = switch (@typeInfo(@TypeOf(handler))) {
-        .@"fn" => |info| info.calling_convention,
+        .@"fn" => |info| info.attrs.@"callconv",
         else => @compileError("Declarations in the interrupt namespace must all be functions. '" ++ name ++ "' is not a function"),
     };
 
@@ -53,7 +60,7 @@ pub fn Entry(comptime App: type) type {
 
     return struct {
         comptime {
-            std.debug.assert(std.mem.eql(u8, "RESET", std.meta.fields(platform.VectorTable)[0].name));
+            std.debug.assert(std.mem.eql(u8, "RESET", @typeInfo(platform.VectorTable).@"struct".field_names[0]));
 
             var asm_str: []const u8 = ".section .vectors\njmp _start\n";
             const has_interrupts = @hasDecl(App, "interrupts");
@@ -65,28 +72,34 @@ pub fn Entry(comptime App: type) type {
                 validateInterruptNamespace(App.interrupts, "interrupts");
             }
 
-            for (std.meta.fields(platform.VectorTable)[1..]) |field| {
-                const new_instruction = if (has_interrupts) overload: {
-                    if (@hasDecl(App.interrupts, field.name)) {
-                        exportInterruptHandler(App.interrupts, field.name);
-                        break :overload "jmp " ++ field.name;
+            const info = @typeInfo(platform.VectorTable);
+            switch (info) {
+                .@"struct" => |strct| {
+                    for (strct.field_names[1..]) |field_name| {
+                        const new_instruction = if (has_interrupts) overload: {
+                            if (@hasDecl(App.interrupts, field_name)) {
+                                exportInterruptHandler(App.interrupts, field_name);
+                                break :overload "jmp " ++ field_name;
+                            }
+
+                            if (@hasDecl(runtime_interrupts, field_name)) {
+                                exportInterruptHandler(runtime_interrupts, field_name);
+                                break :overload "jmp " ++ field_name;
+                            }
+
+                            break :overload "jmp _unhandled_vector";
+                        } else if (@hasDecl(runtime_interrupts, field_name)) runtime_default: {
+                            exportInterruptHandler(runtime_interrupts, field_name);
+                            break :runtime_default "jmp " ++ field_name;
+                        } else "jmp _unhandled_vector";
+
+                        asm_str = asm_str ++ new_instruction ++ "\n";
                     }
 
-                    if (@hasDecl(runtime_interrupts, field.name)) {
-                        exportInterruptHandler(runtime_interrupts, field.name);
-                        break :overload "jmp " ++ field.name;
-                    }
-
-                    break :overload "jmp _unhandled_vector";
-                } else if (@hasDecl(runtime_interrupts, field.name)) runtime_default: {
-                    exportInterruptHandler(runtime_interrupts, field.name);
-                    break :runtime_default "jmp " ++ field.name;
-                } else "jmp _unhandled_vector";
-
-                asm_str = asm_str ++ new_instruction ++ "\n";
+                    asm (asm_str);
+                },
+                else => @compileError("The platform's vector table is not a struct. This is unexpected."),
             }
-
-            asm (asm_str);
         }
 
         /// Handles an unbound interrupt.

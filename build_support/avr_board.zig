@@ -99,10 +99,9 @@ pub fn addUploadStep(
     upload_profile: UploadProfile,
     tty: []const u8,
     description: []const u8,
-    bin_path: []const u8,
+    bin_path: std.Build.LazyPath, //[]const u8,
 ) void {
     const upload = b.step("upload", description);
-
     const avrdude = switch (board) {
         .uno => b.addSystemCommand(&.{
             "avrdude",
@@ -111,7 +110,6 @@ pub fn addUploadStep(
             "-D",
             "-P",
             tty,
-            b.fmt("-Uflash:w:{s}:e", .{bin_path}),
         }),
         .nano => b.addSystemCommand(&.{
             "avrdude",
@@ -124,7 +122,6 @@ pub fn addUploadStep(
             "-D",
             "-P",
             tty,
-            b.fmt("-Uflash:w:{s}:e", .{bin_path}),
         }),
         .mega2560 => b.addSystemCommand(&.{
             "avrdude",
@@ -134,21 +131,25 @@ pub fn addUploadStep(
             "-D",
             "-P",
             tty,
-            b.fmt("-Uflash:w:{s}:e", .{bin_path}),
         }),
     };
+
+    avrdude.addFileArg2(bin_path, .{
+        .prefix = "-Uflash:w:",
+        .suffix = ":e",
+    });
 
     avrdude.step.dependOn(b.getInstallStep());
     upload.dependOn(&avrdude.step);
 }
 
-pub fn addObjdumpStep(b: *std.Build, description: []const u8, bin_path: []const u8) void {
+pub fn addObjdumpStep(b: *std.Build, description: []const u8, bin_path: std.Build.LazyPath) void {
     const objdump = b.step("objdump", description);
     const avr_objdump = b.addSystemCommand(&.{
         "avr-objdump",
         "-dh",
-        bin_path,
     });
+    avr_objdump.addFileArg2(bin_path, .{});
     avr_objdump.step.dependOn(b.getInstallStep());
     objdump.dependOn(&avr_objdump.step);
 }
@@ -160,5 +161,6 @@ pub fn addMonitorStep(b: *std.Build, tty: []const u8) void {
         tty,
         "115200",
     });
+    // screen.stdio.inherit;
     monitor.dependOn(&screen.step);
 }

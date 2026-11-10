@@ -1,0 +1,14 @@
+.{
+    .name = .lcd_hd44780_i2c_example,
+    .version = "0.1.0",
+    .fingerprint = 0xec67fb173fdf7581,
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{
+        .avr_zig = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

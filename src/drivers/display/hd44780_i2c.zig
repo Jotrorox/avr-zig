@@ -44,7 +44,7 @@ pub fn Display(comptime display_columns: u8, comptime display_rows: u8) type {
 
         address: u7 = default_address,
         backlight_enabled: bool = true,
-        buffer: [buffer_len]u8 = [_]u8{' '} ** buffer_len,
+        buffer: [buffer_len]u8 = @splat(' '),
 
         /// Initializes the display.
         pub fn init(self: *Self) bool {
